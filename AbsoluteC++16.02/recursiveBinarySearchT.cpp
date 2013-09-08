@@ -10,6 +10,7 @@ the template parameter type.
 #include <iostream> // cin cout endl
 #include <fstream> // ifstream
 #include <sstream> // stringstream
+#include <stdlib.h> //exit
 using std::cin;
 using std::cout;
 using std::endl;
@@ -47,8 +48,8 @@ int main( )
 
     int intArray[ARRAY_SIZE];
     double doubleArray[ARRAY_SIZE];
-    readArray( "int", intArray, inStream );
-    readArray( "double", doubleArray, inStream );
+    readArray( (char*)"int", intArray, inStream );
+    readArray( (char*)"double", doubleArray, inStream );
 
     inStream.close( );
 
