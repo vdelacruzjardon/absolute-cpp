@@ -18,6 +18,7 @@ birthday for a given room size.
 #define TRIALS 5000
 #define DAYS_IN_YEAR 365
 #include <iostream>
+#include <stdlib.h> // rand srand
 using namespace std;
 
 double getSameBDProb( const unsigned int people );
