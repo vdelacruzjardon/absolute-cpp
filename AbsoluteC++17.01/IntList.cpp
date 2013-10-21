@@ -8,13 +8,29 @@ namespace ncoop {
 
 	// IntList definitions
 	IntList::IntList()
-	{
-		listHead = NULL;
+	{ // default constructor sets head to null
+		listHead = new ListNode;
 	}
 
+	IntList::IntList(const IntList& original)
+	{ // copy constructor makes a deep copy of the original list
+		listHead = new ListNode;
+		*this = original;
+	}
+	
+	IntList::~IntList()
+	{ // destructor deletes every node and then the head
+	}
+	
 	size_t IntList::size()
-	{
-		return 0; // stub
+	{ // return number of nodes in the list
+		size_t count(0);
+		thisNode* = listHead;
+		while (thisNode->next != NULL)
+		{
+			count++;
+		}
+		return count; // stub
 	}
 	
 	IntListNode* IntList::insert(int theData)
@@ -29,14 +45,15 @@ namespace ncoop {
 	}
 
 
+
 	// IntListNode definitions
 	IntListNode::IntListNode()
-	{
+	{ // default constructor
 		nextNode = NULL;
 	}
 	
 	IntListNode::IntListNode(int theData, IntListNode* theNextNode)
-	{
+	{ // constructor specifies data to be added
 		data = theData;
 		nextNode = theNextNode;
 	}

@@ -20,6 +20,9 @@ using ncoop::IntListNode;
 
 int main( ) {
 	IntList testList;
+	cout << testList.size() << endl;
+	testList.add(3);
+	cout << testList.size() << endl;
 
     return 0;
 }

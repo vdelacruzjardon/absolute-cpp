@@ -7,6 +7,21 @@ Absolute C++ (5e); Ch. 17 "Linked Data Structures"; Project 1
 
 namespace ncoop {
 	
+    class IntList {
+	public:
+		IntList();
+		IntList(const IntList& original);
+		~IntList();
+
+		size_t size();
+		IntListNode* insert(int theData);
+		IntListNode* remove(int theData);
+	
+	private:
+		IntListNode* listHead;
+	
+	}; // class IntList
+	
     class IntListNode {
     public:
 		IntListNode();
@@ -24,19 +39,6 @@ namespace ncoop {
 
     }; // class IntListNode
 
-    class IntList {
-	public:
-		IntList();
-
-		size_t size();
-		IntListNode* insert(int theData);
-		IntListNode* remove(int theData);
-	
-	private:
-		IntListNode* listHead;
-	
-	}; // class IntList
-	
 } // ncoop
 
 #endif // INT_LIST_H
