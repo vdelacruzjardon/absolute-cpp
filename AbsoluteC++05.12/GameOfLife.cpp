@@ -11,7 +11,7 @@ world is actually unlimited, we do not have that luxury, so we restrict the arra
 80 characters wide by 22 character positions high. If you have access to a larger 
 screen, by all means use it. 
   This world is an array with each cell capable of holding one LIFE cell. Generations 
-mark the passing of time. Each update_generation brings births and deaths to the LIFE 
+mark the passing of time. Each advance_generation brings births and deaths to the LIFE 
 community. The births and deaths follow this set of rules: 
   1.  We define each cell to have eight neighbor cells. The neighbors of a cell are the 
 cells directly above, below, to the right, to the left, diagonally above to the right 
@@ -20,7 +20,7 @@ and left, and diagonally below, to the right and left.
 cell has more than three neighbors, it dies of overcrowding. 
   3.  If an empty cell has exactly three occupied neighbor cells, there is a birth of a 
 new cell to replace the empty cell. 
-4.  Births and deaths are instantaneous and occur at the changes of update_generation. 
+4.  Births and deaths are instantaneous and occur at the changes of advance_generation. 
 A cell dying for whatever reason may help cause birth, but a newborn cell cannot 
 resurrect a cell that is dying, nor will a cell's death prevent the death of another, 
 say, by reducing the local population. 
@@ -32,17 +32,48 @@ say, by reducing the local population.
 #define DEAD '.'
 #define QUIT 'q'
 #include <iostream>
-using namespace std;
+#include <fstream>
+//#include <cstdlib>
+using std::cout;
+using std::cerr;
+using std::cin;
+using std::endl;
+using std::ifstream;
+using std::ostream;
 
-void display_generation( char world[WIDTH][HEIGHT], unsigned int& gen );
-void update_generation( char world[WIDTH][HEIGHT] );
+void display_generation( char world[WIDTH][HEIGHT], size_t &gen );
+void advance_generation( char world[WIDTH][HEIGHT] );
 bool confirm_continue( );
 
-int main ( ) {
+struct World {
+	public:
+	World( );
+	World( bool initial );
+	
+	void advance_generation( );
+	friend ostream &operator <<( ostream &outputStream, const World &this_world );
+	
+	private:
+	size_t generation;
+	bool cell[WIDTH][HEIGHT];
+};
+
+int main ( int argc, char *argv[] ) {
     cout << "~~~ The Game of Life ~~~" << endl;
+    ifstream infile;
+    if ( argc <= 1 ) {
+		cerr << "Error: No input filename provided." << endl;
+	} else {
+		infile.open(argv[1]);
+		if ( infile.fail( ) )
+			cerr << "Error: could not open input file '" << argv[1] << "'" << endl;
+		else
+			cout << "opened input file '" << argv[1] << "'" << endl;
+		infile.close( );
+	}
     cout << "Press enter to pass a generation. '" << QUIT << "' key quits." << endl;
 
-    unsigned int gen = 0;
+    size_t gen = 0;
     char world[WIDTH][HEIGHT];
     for (int x = 0; x < WIDTH; x++)
         for (int y = 0; y < HEIGHT; y++)
@@ -54,7 +85,7 @@ int main ( ) {
 
     do {
         display_generation( world, gen );
-        update_generation( world );
+        advance_generation( world );
     } while ( confirm_continue( ) );
 
     cout << "Stopped after generation " << gen-1 << endl;
@@ -75,7 +106,7 @@ bool confirm_continue( ) {
 	return retval;
 }
 
-void display_generation( char world[WIDTH][HEIGHT], unsigned int& gen ) {
+void display_generation( char world[WIDTH][HEIGHT], size_t &gen ) {
     cout << "Generation " << gen << endl;
     for (int y = 0; y < HEIGHT; y++) {
         for (int x = 0; x < WIDTH; x++) 
@@ -85,8 +116,9 @@ void display_generation( char world[WIDTH][HEIGHT], unsigned int& gen ) {
     gen++;
 }
 
-void update_generation( char world[WIDTH][HEIGHT] ) {
+void advance_generation( char world[WIDTH][HEIGHT] ) {
     char next[WIDTH][HEIGHT];
+    cout << endl;
     for (int y = 0; y < HEIGHT; y++) 
         for (int x = 0; x < WIDTH; x++) {
             int l = (x-1 <= 0) ? x-1 : WIDTH-1;
