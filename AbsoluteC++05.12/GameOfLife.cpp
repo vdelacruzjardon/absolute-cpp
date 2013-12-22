@@ -31,15 +31,17 @@ say, by reducing the local population.
 #define ALIVE '*'
 #define DEAD '.'
 #define QUIT 'q'
-#include <iostream>
-#include <fstream>
-//#include <cstdlib>
+#include <iostream> //std::cout cerr cin
+#include <fstream> //std::ifstream
+#include <cstring> //strcat
+#include <stdexcept> //std::logic_error
+#include <stdlib.h> //exit
 using std::cout;
 using std::cerr;
 using std::cin;
 using std::endl;
-using std::ifstream;
 using std::ostream;
+using std::logic_error;
 
 void display_generation( char world[WIDTH][HEIGHT], size_t &gen );
 void advance_generation( char world[WIDTH][HEIGHT] );
@@ -60,17 +62,27 @@ struct World {
 
 int main ( int argc, char *argv[] ) {
     cout << "~~~ The Game of Life ~~~" << endl;
-    ifstream infile;
-    if ( argc <= 1 ) {
-		cerr << "Error: No input filename provided." << endl;
-	} else {
-		infile.open(argv[1]);
-		if ( infile.fail( ) )
-			cerr << "Error: could not open input file '" << argv[1] << "'" << endl;
-		else
-			cout << "opened input file '" << argv[1] << "'" << endl;
-		infile.close( );
+
+    try {
+		if ( argc <= 1 ) {
+			throw logic_error("Error: No input file argument provided.");
+		} else {
+			std::ifstream infile;
+			infile.open(argv[1]);
+			if ( infile.fail( ) ) {
+				char error_msg[256] = "Error: Could not open input file '";
+				strcat(error_msg, argv[1]);
+				strcat(error_msg, "'");
+				throw logic_error(error_msg);
+			} else
+				cout << "opened input file '" << argv[1] << "'." << endl;
+			infile.close( );
+		}
+	} catch (logic_error e) {
+		cerr << e.what( ) << endl;
+		exit(1);
 	}
+	
     cout << "Press enter to pass a generation. '" << QUIT << "' key quits." << endl;
 
     size_t gen = 0;
