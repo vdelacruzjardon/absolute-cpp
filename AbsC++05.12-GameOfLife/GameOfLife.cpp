@@ -1,35 +1,33 @@
 /*
 Absolute C++ (5e); Ch. 5 "Arrays"; Project 12
 
-  The mathematician John Horton Conway invented the "Game of Life." Though 
-not a "game" in any traditional sense, it provides interesting behavior that is 
-specified with only a few rules. This project asks you to write a program that 
-allows you to specify an initial configuration. The program follows the rules of 
-Life (listed shortly) to show the continuing behavior of the configuration. 
-  LIFE is an organism that lives in a discrete, two-dimensional world. While this 
-world is actually unlimited, we do not have that luxury, so we restrict the array to 
-80 characters wide by 22 character positions high. If you have access to a larger 
-screen, by all means use it. 
-  This world is an array with each cell capable of holding one LIFE cell. Generations 
-mark the passing of time. Each advance_generation brings births and deaths to the LIFE 
-community. The births and deaths follow this set of rules: 
-  1.  We define each cell to have eight neighbor cells. The neighbors of a cell are the 
-cells directly above, below, to the right, to the left, diagonally above to the right 
-and left, and diagonally below, to the right and left. 
-  2.  If an occupied cell has zero or one neighbor, it dies of loneliness. If an occupied 
-cell has more than three neighbors, it dies of overcrowding. 
-  3.  If an empty cell has exactly three occupied neighbor cells, there is a birth of a 
-new cell to replace the empty cell. 
-4.  Births and deaths are instantaneous and occur at the changes of advance_generation. 
-A cell dying for whatever reason may help cause birth, but a newborn cell cannot 
-resurrect a cell that is dying, nor will a cell's death prevent the death of another, 
-say, by reducing the local population. 
+  The mathematician John Horton Conway invented the "Game of Life." Though
+not a "game" in any traditional sense, it provides interesting behavior that is
+specified with only a few rules. This project asks you to write a program that
+allows you to specify an initial configuration. The program follows the rules of
+Life (listed shortly) to show the continuing behavior of the configuration.
+  LIFE is an organism that lives in a discrete, two-dimensional world. While this
+world is actually unlimited, we do not have that luxury, so we restrict the array to
+80 characters wide by 22 character positions high. If you have access to a larger
+screen, by all means use it.
+  This world is an array with each cell capable of holding one LIFE cell. Generations
+mark the passing of time. Each advance_generation brings births and deaths to the LIFE
+community. The births and deaths follow this set of rules:
+  1.  We define each cell to have eight neighbor cells. The neighbors of a cell are the
+cells directly above, below, to the right, to the left, diagonally above to the right
+and left, and diagonally below, to the right and left.
+  2.  If an occupied cell has zero or one neighbor, it dies of loneliness. If an occupied
+cell has more than three neighbors, it dies of overcrowding.
+  3.  If an empty cell has exactly three occupied neighbor cells, there is a birth of a
+new cell to replace the empty cell.
+4.  Births and deaths are instantaneous and occur at the changes of advance_generation.
+A cell dying for whatever reason may help cause birth, but a newborn cell cannot
+resurrect a cell that is dying, nor will a cell's death prevent the death of another,
+say, by reducing the local population.
 */
 
 #define WIDTH 10
 #define HEIGHT 4
-#define ALIVE '*'
-#define DEAD '.'
 #define QUIT 'q'
 #include <iostream> //std::cout cerr cin
 #include <fstream> //std::ifstream
@@ -43,49 +41,37 @@ using std::endl;
 using std::ostream;
 using std::logic_error;
 
+enum DrawSymbols { ALIVE = '*', DEAD = '.' };
+
 void display_generation( char world[WIDTH][HEIGHT], size_t &gen );
 void advance_generation( char world[WIDTH][HEIGHT] );
 bool confirm_continue( );
-
-struct World {
-	public:
-	World( );
-	World( bool initial );
-	
-	void advance_generation( );
-	friend ostream &operator <<( ostream &outputStream, const World &this_world );
-	
-	private:
-	size_t generation;
-	bool cell[WIDTH][HEIGHT];
-};
 
 int main ( int argc, char *argv[] ) {
     cout << "~~~ The Game of Life ~~~" << endl;
 
     try {
-		if ( argc <= 1 ) {
-			throw logic_error("Error: No input file argument provided.");
-		} else {
-			std::ifstream infile;
-			infile.open(argv[1]);
-			if ( infile.fail( ) ) {
-				char error_msg[256] = "Error: Could not open input file '";
-				strcat(error_msg, argv[1]);
-				strcat(error_msg, "'");
-				throw logic_error(error_msg);
-			} else
-				cout << "opened input file '" << argv[1] << "'." << endl;
-			infile.close( );
-		}
-	} catch (logic_error e) {
-		cerr << e.what( ) << endl;
-		exit(1);
-	}
-	
-    cout << "Press enter to pass a generation. '" << QUIT << "' key quits." << endl;
+        if ( argc <= 1 ) {
+            throw logic_error("Error: No input file argument provided.");
+        } else {
+            std::ifstream infile;
+            infile.open(argv[1]);
+            if ( infile.fail( ) ) {
+                char error_msg[256] = "Error: Could not open input file '";
+                strcat(error_msg, argv[1]);
+                strcat(error_msg, "'");
+                throw logic_error(error_msg);
+            } else {
+                cout << "opened input file '" << argv[1] << "'." << endl;
+                // parse contents
+            }
+            infile.close( );
+        }
+    } catch (logic_error e) {
+        cerr << e.what( ) << endl;
+        exit(1);
+    }
 
-    size_t gen = 0;
     char world[WIDTH][HEIGHT];
     for (int x = 0; x < WIDTH; x++)
         for (int y = 0; y < HEIGHT; y++)
@@ -95,6 +81,9 @@ int main ( int argc, char *argv[] ) {
     world[1][2] = ALIVE;
     world[1][3] = ALIVE;
 
+    cout << "Press enter to pass a generation. '" << QUIT << "' key quits." << endl;
+
+    size_t gen = 0;
     do {
         display_generation( world, gen );
         advance_generation( world );
@@ -106,22 +95,22 @@ int main ( int argc, char *argv[] ) {
 }
 
 bool confirm_continue( ) {
-	bool retval(true);
-	char symbol;
-	do {
-		cin.get( symbol );
-		if ( tolower(symbol) == QUIT ) {
-			retval = false;
-			break;
-		}
-	} while ( symbol != '\n' );
-	return retval;
+    bool retval(true);
+    char symbol;
+    do {
+        cin.get( symbol );
+        if ( tolower(symbol) == QUIT ) {
+            retval = false;
+            break;
+        }
+    } while ( symbol != '\n' );
+    return retval;
 }
 
 void display_generation( char world[WIDTH][HEIGHT], size_t &gen ) {
     cout << "Generation " << gen << endl;
     for (int y = 0; y < HEIGHT; y++) {
-        for (int x = 0; x < WIDTH; x++) 
+        for (int x = 0; x < WIDTH; x++)
             cout << world[x][y];
         cout << endl;
     }
@@ -131,7 +120,7 @@ void display_generation( char world[WIDTH][HEIGHT], size_t &gen ) {
 void advance_generation( char world[WIDTH][HEIGHT] ) {
     char next[WIDTH][HEIGHT];
     cout << endl;
-    for (int y = 0; y < HEIGHT; y++) 
+    for (int y = 0; y < HEIGHT; y++)
         for (int x = 0; x < WIDTH; x++) {
             int l = (x-1 <= 0) ? x-1 : WIDTH-1;
             int r = (x+1 < WIDTH) ? x+1 : 0;
