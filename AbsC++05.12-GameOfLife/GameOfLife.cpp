@@ -31,14 +31,15 @@ say, by reducing the local population.
 #define QUIT 'q'
 #include <iostream> //std::cout cerr cin
 #include <fstream> //std::ifstream
-#include <cstring> //strcat
+#include <string>
 #include <stdexcept> //std::logic_error
 #include <stdlib.h> //exit
+#include "World.h"
 using std::cout;
 using std::cerr;
 using std::cin;
 using std::endl;
-using std::ostream;
+using std::string;
 using std::logic_error;
 
 enum DrawSymbols { ALIVE = '*', DEAD = '.' };
@@ -57,14 +58,39 @@ int main ( int argc, char *argv[] ) {
             std::ifstream infile;
             infile.open(argv[1]);
             if ( infile.fail( ) ) {
-                char error_msg[256] = "Error: Could not open input file '";
-                strcat(error_msg, argv[1]);
-                strcat(error_msg, "'");
-                throw logic_error(error_msg);
-            } else {
-                cout << "opened input file '" << argv[1] << "'." << endl;
-                // parse contents
+                string errmsg(argv[1]); // construct string from C-string
+                throw logic_error("Error: Could not open input file '" + errmsg + "'");
             }
+            cout << "opened input file '" << argv[1] << "'." << endl;
+            string nextline;
+            size_t width(0), height(0);
+            // parse contents
+            while ( getline(infile, nextline) ) {
+                height++;
+                if (height > 1 && width != nextline.length()) {
+                    char h0[20], w0[20], h1[20], w1[20];
+                    sprintf(h0, "%ld", height-1);
+                    sprintf(w0, "%ld", width);
+                    sprintf(h1, "%ld", height);
+                    sprintf(w1, "%ld", nextline.length());
+                    throw logic_error("Parse error: line " + string(h0) + " is " + string(w0) +
+                        " cols wide, but line " + string(h1) + " is " + string(w1) + " cols wide.");
+                }
+                width = nextline.length();
+                for (size_t i = 0; i < width; i++)
+                switch( nextline[i] ) {
+                case ALIVE:
+                    //width++;
+                    break;
+                case DEAD:
+                    //width++;
+                    break;
+                default:
+                    cerr << "Parse error, line " << height << ", col: " << i+1 <<
+                        " invalid char '" << nextline[i] << "'" << endl;
+                }
+            }
+            cerr << "height " << height << ", width " << width << endl;
             infile.close( );
         }
     } catch (logic_error e) {

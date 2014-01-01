@@ -1,6 +1,9 @@
 #ifndef WORLD_H
 #define WORLD_H
 
+namespace ncoop {
+using std::ostream;
+
 struct World {
     public:
     World( );
@@ -14,4 +17,6 @@ struct World {
     bool *cell;
 };
 
-#endif
+} // namespace
+
+#endif // WORLD_H
