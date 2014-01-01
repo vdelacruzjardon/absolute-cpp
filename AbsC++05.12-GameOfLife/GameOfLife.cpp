@@ -31,7 +31,7 @@ say, by reducing the local population.
 #define QUIT 'q'
 #include <iostream> //std::cout cerr cin
 #include <fstream> //std::ifstream
-#include <string>
+#include <sstream> //std::ostringstream
 #include <stdexcept> //std::logic_error
 #include <stdlib.h> //exit
 #include "World.h"
@@ -39,7 +39,6 @@ using std::cout;
 using std::cerr;
 using std::cin;
 using std::endl;
-using std::string;
 using std::logic_error;
 
 enum DrawSymbols { ALIVE = '*', DEAD = '.' };
@@ -52,29 +51,30 @@ int main ( int argc, char *argv[] ) {
     cout << "~~~ The Game of Life ~~~" << endl;
 
     try {
+        std::ostringstream errmsg;
+        // check for argument
         if ( argc <= 1 ) {
-            throw logic_error("Error: No input file argument provided.");
+            errmsg << "Error: No input file argument provided.";
+            throw logic_error( errmsg.str() );
         } else {
             std::ifstream infile;
             infile.open(argv[1]);
+        // try opening file
             if ( infile.fail( ) ) {
-                string errmsg(argv[1]); // construct string from C-string
-                throw logic_error("Error: Could not open input file '" + errmsg + "'");
+                errmsg << "Error: Could not open input file '" << errmsg << "'";
+                throw logic_error( errmsg.str() );
             }
             cout << "opened input file '" << argv[1] << "'." << endl;
-            string nextline;
+            std::string nextline;
             size_t width(0), height(0);
-            // parse contents
+
+        // parse contents
             while ( getline(infile, nextline) ) {
                 height++;
                 if (height > 1 && width != nextline.length()) {
-                    char h0[20], w0[20], h1[20], w1[20];
-                    sprintf(h0, "%ld", height-1);
-                    sprintf(w0, "%ld", width);
-                    sprintf(h1, "%ld", height);
-                    sprintf(w1, "%ld", nextline.length());
-                    throw logic_error("Parse error: line " + string(h0) + " is " + string(w0) +
-                        " cols wide, but line " + string(h1) + " is " + string(w1) + " cols wide.");
+                    errmsg << "Parse error: line " << height-1 << " is " << width <<
+                        " cols wide, but line " << height << " is " << nextline.length() << " cols wide.";
+                    throw logic_error( errmsg.str() );
                 }
                 width = nextline.length();
                 for (size_t i = 0; i < width; i++)
@@ -86,8 +86,9 @@ int main ( int argc, char *argv[] ) {
                     //width++;
                     break;
                 default:
-                    cerr << "Parse error, line " << height << ", col: " << i+1 <<
-                        " invalid char '" << nextline[i] << "'" << endl;
+                    errmsg << "Parse error, line " << height << ", col: " << i+1 <<
+                        " invalid char '" << nextline[i] << "'";
+                    throw logic_error( errmsg.str() );
                 }
             }
             cerr << "height " << height << ", width " << width << endl;
