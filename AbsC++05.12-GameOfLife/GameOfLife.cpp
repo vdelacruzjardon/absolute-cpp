@@ -78,18 +78,16 @@ int main ( int argc, char *argv[] ) {
                 }
                 width = nextline.length();
                 for (size_t i = 0; i < width; i++)
-                switch( nextline[i] ) {
-                case ALIVE:
-                    //width++;
-                    break;
-                case DEAD:
-                    //width++;
-                    break;
-                default:
-                    errmsg << "Parse error, line " << height << ", col: " << i+1 <<
-                        " invalid char '" << nextline[i] << "'";
-                    throw logic_error( errmsg.str() );
-                }
+                    switch( nextline[i] ) {
+                    case ALIVE:
+                        break;
+                    case DEAD:
+                        break;
+                    default:
+                        errmsg << "Parse error, line " << height << ", col: " << i+1 <<
+                            " invalid char '" << nextline[i] << "'";
+                        throw logic_error( errmsg.str() );
+                    }
             }
             cerr << "height " << height << ", width " << width << endl;
             infile.close( );
