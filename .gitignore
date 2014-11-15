@@ -1,0 +1,16 @@
+﻿*.fuse_hidden*
+*.swp
+
+*.exe
+*.zip
+
+# Visual Studio artifacts
+*.sln
+*.vcxproj*
+*.opensdf
+*.sdf
+*.suo
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
